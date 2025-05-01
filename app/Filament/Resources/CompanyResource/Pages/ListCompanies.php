@@ -21,7 +21,8 @@ class ListCompanies extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-            ->visible(fn () => \App\Models\Company::count() === 0),
+                ->visible(fn () => Company::count() === 0)
+                ->successRedirectUrl(CompanyResource::getUrl()),
         ];
     }
 }
