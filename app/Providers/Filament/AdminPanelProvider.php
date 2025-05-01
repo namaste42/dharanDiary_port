@@ -2,6 +2,12 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Resources\NewsResource\Widgets\NewsStatsWidget;
+use App\Filament\Widgets\ArticlesWithoutSEO;
+use App\Filament\Widgets\ContentStatsWidget;
+use App\Filament\Widgets\MostActiveAuthors;
+use App\Filament\Widgets\MostViewedArticles;
+use App\Filament\Widgets\SystemHealthWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -27,6 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName('Dharan Diary')
             ->login()
             ->colors([
                 'primary' => Color::Amber,
@@ -39,6 +46,12 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
+                NewsStatsWidget::class,
+                ContentStatsWidget::class,
+                // MostViewedArticles::class,
+                SystemHealthWidget::class,
+                ArticlesWithoutSEO::class,
+                MostActiveAuthors::class,
                 // Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
