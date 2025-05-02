@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\MultiSelect;
 use Filament\Forms\Components\Section;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -57,7 +58,7 @@ class ArticleResource extends Resource
                             ->relationship('author', 'name') // assumes your user/author model has a 'name' column
                             // ->searchable()
                             // ->preload()
-                            ->default(fn () => Auth::id())
+                            ->default(fn() => Auth::id())
                             ->disabled()
                             ->required(),
                         Forms\Components\Select::make('status')
@@ -79,7 +80,7 @@ class ArticleResource extends Resource
                             ->image()
                             ->directory('articles'),
                     ]),
-                    Section::make('SEO')
+                Section::make('SEO')
                     ->collapsible()
                     ->schema([
                         Forms\Components\Textarea::make('meta_keywords')
@@ -136,6 +137,12 @@ class ArticleResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('created_at'); // 👈 orders newest first
     }
 
     public static function getPages(): array
