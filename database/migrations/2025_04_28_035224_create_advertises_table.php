@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('image');
             $table->date('expire_date')->nullable();
             $table->string('redirect_url')->nullable();
-            $table->enum('location', ['header', 'home', 'category', 'article'])->default('header');
+            $table->enum('location', ['header', 'footer', 'main_content', 'sidebar', 'sidebar_top'])->default('header');
             $table->timestamps();
         });
     }

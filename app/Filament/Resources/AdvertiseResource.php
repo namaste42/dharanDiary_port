@@ -11,6 +11,7 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\BadgeColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
@@ -47,8 +48,22 @@ class AdvertiseResource extends Resource
                 Forms\Components\TextInput::make('redirect_url')
                     ->maxLength(255)
                     ->default(null),
-                Forms\Components\TextInput::make('location')
-                    ->required(),
+                Forms\Components\Select::make('location')
+                    ->options([
+                        'header' => 'Header',
+                        'footer' => 'Footer',
+                        'sidebar' => 'Sidebar',
+                        'sidebar_top' => 'Sidebar Top',
+                        'main_content' => 'Main Content',
+                    ])
+                    ->required()
+                    // ->reactive()
+                    ->afterStateUpdated(function (string $operation, $state, Set $set) {
+                        if ($operation === 'create') {
+                            $set('location', $state);
+                        }
+                    })
+                    ->default('header'),
             ]);
     }
 
@@ -60,12 +75,27 @@ class AdvertiseResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('contact')
                     ->searchable(),
-                Tables\Columns\ImageColumn::make('image'),
+                Tables\Columns\ImageColumn::make('image')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                // Tables\Columns\TextColumn::make('expire_date')
+                //     ->date()
+                //     ->sortable(),
                 Tables\Columns\TextColumn::make('expire_date')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('redirect_url')
+                    ->label('Status')
+                    ->formatStateUsing(function ($state) {
+                        if (!$state) {
+                            return 'No Expiration';
+                        }
+
+                        return \Carbon\Carbon::parse($state)->isPast()
+                            ? 'Expired'
+                            : 'Active';
+                    })
+                    ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('redirect_url')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('location'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
